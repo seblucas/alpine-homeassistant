@@ -4,14 +4,12 @@ LABEL Description="Home Assistant"
 
 RUN mkdir /data && \
     apk add --no-cache --virtual=build-dependencies build-base linux-headers python3-dev && \
-    pip install --no-cache-dir --trusted-host https://pypi.python.org homeassistant && \
-    pip install --no-cache-dir --trusted-host https://pypi.python.org sqlalchemy==1.1.5 distro==1.0.2 aiohttp_cors==0.5.0 gTTS-token==1.1.1 astral==1.3.4 fuzzywuzzy==0.14.0 xmltodict==0.10.2 netdisco==0.8.2 jsonrpc-async==0.2 samsungctl==0.6.0 pychromecast==0.8.0 paho-mqtt==1.2 pwaqi==1.4 rxv==0.4.0 && \
+    pip install --no-cache-dir --trusted-host https://pypi.python.org homeassistant==0.45.1 && \
+    pip install --no-cache-dir --trusted-host https://pypi.python.org sqlalchemy==1.1.9 distro==1.0.4 aiohttp_cors==0.5.3 jsonrpc-async==0.6 samsungctl==0.6.0 pychromecast==0.8.1 paho-mqtt==1.2.3 rxv==0.4.0 jsonrpc-websocket==0.5 wakeonlan==0.2.2 websocket-client && \
     apk del build-dependencies && \
     rm -rf /tmp/* /var/tmp/* /var/cache/apk/*
 
 EXPOSE 8123
-
-VOLUME ["/data"]
 
 ENTRYPOINT ["hass", "--open-ui", "--config=/data"]
 
