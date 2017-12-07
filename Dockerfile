@@ -1,5 +1,5 @@
 FROM seblucas/alpine-python3:3.6.1
-LABEL maintainer=Sebastien Lucas <sebastien@slucas.fr>
+LABEL maintainer="Sebastien Lucas <sebastien@slucas.fr>"
 LABEL Description="Home Assistant"
 
 RUN mkdir /data && \
