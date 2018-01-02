@@ -1,0 +1,14 @@
+image: seblucas/alpine-homeassistant:{tag}
+tags: ['latest','{majmin}']
+manifests:
+ -
+   image: seblucas/alpine-homeassistant:armv6-{tag}
+   platform:
+     architecture: arm
+     variant: v6
+     os: linux
+ -
+   image: seblucas/alpine-homeassistant:amd64-{tag}
+   platform:
+     architecture: amd64
+     os: linux
