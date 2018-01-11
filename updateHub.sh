@@ -2,7 +2,8 @@
 
 TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
 MAJMIN=`echo $TAG | cut -d . -f 1,2 `
-DIR="alpine-homeassistant"
+ARCH=`dpkg --print-architecture`
+dir="alpine-homeassistant"
 
 echo $TAG
 echo $MAJMIN
