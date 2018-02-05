@@ -9,7 +9,9 @@ This image should be available (unless a problem happened on my side) for the fo
  * armhf
  * arm64
 
-I'm using a proper manifest so you can use the main tags directly (no need for amd64-X.X.X)
+I'm using a proper manifest so you can use the main tags directly (no need for amd64-X.X.X).
+
+If you want to learn more about multi-architecture docker images, please read [my blog](https://blog.slucas.fr/series/multi-architecture-docker-image/)
 
 ## Usage
 
@@ -32,6 +34,10 @@ docker run -it --user 1000 --rm -v /var/opt/docker/homeassistant:/data seblucas/
 ```
 
 Of course you need to have a local user with uid 1000.
+
+### Plugins
+
+Please check the [Dockerfile](Dockerfile) for the list on dependencies embedded. any other will be downloaded automatically by Home Assistant.
 
 ## License
 This project is licensed under `GPLv2`.
