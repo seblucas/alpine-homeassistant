@@ -1,23 +1,32 @@
-FROM alpine:3.7
+FROM alpine:latest
 LABEL maintainer="Sebastien Lucas <sebastien@slucas.fr>"
 LABEL Description="Home Assistant"
 
 ARG TIMEZONE=Europe/Paris
 ARG UID=1000
 ARG GUID=1000
+ARG MAKEFLAGS=-j4
+ARG VERSION=0.79.1
+ARG PLUGINS="frontend|otp|QR|sqlalchemy|hue|xiaomi|fritz|hole|http|google|psutil|weather|musiccast|nmap|webpush|unifi|uptimerobot|speedtest"
 
-RUN apk add --no-cache git python3 ca-certificates libffi-dev openssl-dev && \
+ADD "https://raw.githubusercontent.com/home-assistant/home-assistant/${VERSION}/requirements_all.txt" /tmp
+
+RUN apk add --no-cache git python3 ca-certificates libffi-dev openssl-dev nmap ffmpeg mariadb-client mariadb-connector-c-dev && \
     addgroup -g ${GUID} hass && \
     adduser -h /data -D -G hass -s /bin/sh -u ${UID} hass && \
     pip3 install --upgrade --no-cache-dir pip && \
     apk add --no-cache --virtual=build-dependencies build-base linux-headers python3-dev tzdata && \
     cp "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime && echo "${TIMEZONE}" > /etc/timezone && \
-    pip3 install --no-cache-dir homeassistant==0.78.3 && \
-    pip3 install --no-cache-dir home-assistant-frontend==20180916.0 sqlalchemy==1.2.11 distro==1.3.0 aiohttp_cors==0.7.0 jsonrpc-async==0.6 samsungctl[websocket]==0.7.1 pychromecast==2.1.0 paho-mqtt==1.3.1 rxv==0.5.1 jsonrpc-websocket==0.6 wakeonlan==1.0.0 websocket-client==0.37.0 && \
+    sed '/^$/q' /tmp/requirements_all.txt > /tmp/requirements_core.txt && \
+    sed '1,/^$/d' /tmp/requirements_all.txt > /tmp/requirements_plugins.txt && \
+    egrep -e "${PLUGINS}" /tmp/requirements_plugins.txt | grep -v '#' > /tmp/requirements_plugins_filtered.txt && \  
+    pip3 install --no-cache-dir -r /tmp/requirements_core.txt && \
+    pip3 install --no-cache-dir -r /tmp/requirements_plugins_filtered.txt && \
+    pip3 install --no-cache-dir mysqlclient && \
+    pip3 install --no-cache-dir homeassistant=="${VERSION}" && \
     apk del build-dependencies && \
     rm -rf /tmp/* /var/tmp/* /var/cache/apk/*
 
 EXPOSE 8123
 
 ENTRYPOINT ["hass", "--open-ui", "--config=/data"]
-
