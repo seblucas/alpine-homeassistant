@@ -11,7 +11,7 @@ ARG PLUGINS="frontend|pyotp|PyQRCode|sqlalchemy|distro|http|nmap|weather|uptimer
 
 ADD "https://raw.githubusercontent.com/home-assistant/home-assistant/${VERSION}/requirements_all.txt" /tmp
 
-RUN apk add --no-cache git python3 ca-certificates libffi-dev libressl-dev nmap && \
+RUN apk add --no-cache git python3 ca-certificates libffi-dev libressl-dev nmap iputils && \
     addgroup -g ${GUID} hass && \
     adduser -h /data -D -G hass -s /bin/sh -u ${UID} hass && \
     pip3 install --upgrade --no-cache-dir pip && \
