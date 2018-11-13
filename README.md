@@ -39,5 +39,25 @@ Of course you need to have a local user with uid 1000.
 
 Please check the [Dockerfile](Dockerfile) for the list on dependencies embedded. any other will be downloaded automatically by Home Assistant.
 
+### Customizing this image
+
+You can easily use this image as a base and build your own with additionnal plugins. For example with this `Dockerfile` you use my image as a base and add Homekit plugin :
+
+```
+FROM seblucas/alpine-homeassistant:latest
+
+ARG PLUGINS="HAP-python"
+
+RUN apk add --no-cache --virtual=build-dependencies build-base linux-headers python3-dev && \
+    egrep -e "${PLUGINS}" /requirements_plugins.txt | grep -v '#' > /tmp/requirements_plugins_filtered.txt && \
+    pip3 install --no-cache-dir -r /tmp/requirements_plugins_filtered.txt && \
+    apk del build-dependencies && \
+    rm -rf /tmp/* /var/tmp/* /var/cache/apk/*
+
+ENTRYPOINT ["hass", "--open-ui", "--config=/data"]
+```
+
+The only thing you have to change is the content of `PLUGINS` and add your plugins separated by `|`. Depending on your plugin complexity you may even skip the compiler / headers installation.
+
 ## License
 This project is licensed under `GPLv2`.
