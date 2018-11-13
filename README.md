@@ -41,20 +41,25 @@ Please check the [Dockerfile](Dockerfile) for the list on dependencies embedded.
 
 ### Customizing this image
 
-You can easily use this image as a base and build your own with additionnal plugins. For example with this `Dockerfile` you use my image as a base and add Homekit plugin :
+You can easily use this image as a base and build your own with additionnal plugins. For example with this `Dockerfile` you use my image as a base and add Homekit plugin, change user & group ID of `hass` user and modify an ENTRYPOINT :
 
 ```
 FROM seblucas/alpine-homeassistant:latest
 
+ARG UID="1001"
+ARG GUID="1001"
 ARG PLUGINS="HAP-python"
 
-RUN apk add --no-cache --virtual=build-dependencies build-base linux-headers python3-dev && \
+RUN apk add --no-cache --virtual=build-dependencies build-base linux-headers python3-dev shadow && \
     egrep -e "${PLUGINS}" /requirements_plugins.txt | grep -v '#' > /tmp/requirements_plugins_filtered.txt && \
     pip3 install --no-cache-dir -r /tmp/requirements_plugins_filtered.txt && \
+    usermod -u ${UID} hass && groupmod -g ${GUID} hass && \
     apk del build-dependencies && \
     rm -rf /tmp/* /var/tmp/* /var/cache/apk/*
 
-ENTRYPOINT ["hass", "--open-ui", "--config=/data"]
+EXPOSE 51827
+
+ENTRYPOINT ["hass", "--config=/data"]
 ```
 
 The only thing you have to change is the content of `PLUGINS` and add your plugins separated by `|`. Depending on your plugin complexity you may even skip the compiler / headers installation.
