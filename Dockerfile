@@ -1,4 +1,4 @@
-FROM alpine:3.8 as builder
+FROM alpine:3.8
 LABEL maintainer="Sebastien Lucas <sebastien@slucas.fr>"
 LABEL Description="Home Assistant"
 
