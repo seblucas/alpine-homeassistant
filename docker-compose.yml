@@ -1,0 +1,24 @@
+version: "3"
+services:
+  alpine-homeassistant:
+    build: 
+      context: .
+      args:
+        ARG: TIMEZONE=Europe/Paris
+        #UID: 1000
+        #GUID: 1000
+        #MAKEFLAGS: "-j4"
+        #VERSION: "0.82.1"
+        #PLUGINS: "frontend|pyotp|PyQRCode|sqlalchemy|distro|http|nmap|weather|uptimerobot|rxv|wakeonlan|websocket|paho-mqtt|samsungctl[websocket]|pychromecast|aiohttp_cors|jsonrpc-websocket|jsonrpc-async"
+    image: seblucas/alpine-homeassistant
+    container_name: alpine-homeassistant
+    user: "1000:1000"
+    entrypoint:
+      - hass
+      - --open-ui
+      - --config=/data
+    volumes:
+      - /var/opt/docker/homeassistant:/data
+      #- /etc/localtime:/etc/localtime:ro
+    restart: always 
+    network_mode: host
