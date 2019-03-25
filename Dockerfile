@@ -6,7 +6,7 @@ ARG TIMEZONE=Europe/Paris
 ARG UID=1000
 ARG GUID=1000
 ARG MAKEFLAGS=-j4
-ARG VERSION=0.88.2
+ARG VERSION=0.89.2
 ARG PLUGINS="frontend|pyotp|PyQRCode|sqlalchemy|distro|http|nmap|weather|uptimerobot|rxv|wakeonlan|websocket|paho-mqtt|samsungctl[websocket]|pychromecast|aiohttp_cors|jsonrpc-websocket|jsonrpc-async"
 
 ADD "https://raw.githubusercontent.com/home-assistant/home-assistant/${VERSION}/requirements_all.txt" /tmp
