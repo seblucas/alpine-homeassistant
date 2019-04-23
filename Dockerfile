@@ -1,4 +1,4 @@
-FROM alpine:3.8
+FROM alpine:3.9
 LABEL maintainer="Sebastien Lucas <sebastien@slucas.fr>"
 LABEL Description="Home Assistant"
 
@@ -6,7 +6,7 @@ ARG TIMEZONE=Europe/Paris
 ARG UID=1000
 ARG GUID=1000
 ARG MAKEFLAGS=-j4
-ARG VERSION=0.90.2
+ARG VERSION=0.91.4
 ARG PLUGINS="frontend|pyotp|PyQRCode|sqlalchemy|distro|http|nmap|weather|uptimerobot|rxv|wakeonlan|websocket|paho-mqtt|samsungctl[websocket]|pychromecast|aiohttp_cors|jsonrpc-websocket|jsonrpc-async"
 
 ADD "https://raw.githubusercontent.com/home-assistant/home-assistant/${VERSION}/requirements_all.txt" /tmp
