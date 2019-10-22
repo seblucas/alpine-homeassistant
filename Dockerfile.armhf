@@ -5,7 +5,7 @@ LABEL Description="Home Assistant"
 ARG UID=1000
 ARG GUID=1000
 ARG MAKEFLAGS=-j4
-ARG VERSION=0.99.3
+ARG VERSION=0.100.3
 ARG PLUGINS="frontend|pyotp|PyQRCode|sqlalchemy|distro|http|nmap|weather|uptimerobot|rxv|wakeonlan|websocket|paho-mqtt|samsungctl[websocket]|pychromecast|aiohttp_cors|jsonrpc-websocket|jsonrpc-async"
 
 ENV WHEELS_LINKS=https://wheels.home-assistant.io/alpine-3.10/armhf/
