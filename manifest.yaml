@@ -1,20 +1,17 @@
-image: seblucas/{image}:{tag}
-tags: ['{majmin}','latest']
+image: kurapov/alpine-homeassistant:latest
+tags: ['latest']
 manifests:
- -
-   image: seblucas/{image}:armhf-{tag}
+ - image: kurapov/alpine-homeassistant:amd64-latest
+   platform:
+     architecture: amd64
+     os: linux
+ - image: kurapov/alpine-homeassistant:armhf-latest
    platform:
      architecture: arm
      variant: v7
      os: linux
- -
-   image: seblucas/{image}:arm64-{tag}
+ - image: kurapov/alpine-homeassistant:arm64-latest
    platform:
      architecture: arm64
      variant: v8
-     os: linux
- -
-   image: seblucas/{image}:amd64-{tag}
-   platform:
-     architecture: amd64
      os: linux
