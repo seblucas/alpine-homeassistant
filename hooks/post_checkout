@@ -8,9 +8,11 @@ case ${BUILD_ARCH} in
 esac
 QEMU_ARCH=$([ "${BUILD_ARCH}" == "armhf" ] && echo "${BUILD_ARCH::-2}" || echo "${BUILD_ARCH}")
 ALPINE_VER="${ALPINE_VER:-3.10}"
+HASS_VER=$(cat requirements.txt | grep 'homeassistant' | cut -d '==' -f 2)
 
 cp Dockerfile.template Dockerfile.${BUILD_ARCH}
 sed -i "s|__ALPINE_VER__|${ALPINE_VER}|g" Dockerfile.${BUILD_ARCH}
+sed -i "s|__HASS_VER__|${HASS_VER}|g" Dockerfile.${BUILD_ARCH}
 sed -i "s|__BUILD_ARCH__|${BUILD_ARCH}|g" Dockerfile.${BUILD_ARCH}
 sed -i "s|__BASEIMAGE_ARCH__|${BASEIMAGE_ARCH}|g" Dockerfile.${BUILD_ARCH}
 sed -i "s|__QEMU_ARCH__|${QEMU_ARCH}|g" Dockerfile.${BUILD_ARCH}

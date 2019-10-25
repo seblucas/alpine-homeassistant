@@ -12,6 +12,7 @@ ENV WHEELS_LINKS=https://wheels.home-assistant.io/alpine-__ALPINE_VER__/__BUILD_
 
 __CROSS_COPY qemu-__QEMU_ARCH__-static /usr/bin/
 ADD "https://raw.githubusercontent.com/home-assistant/home-assistant/${VERSION}/requirements_all.txt" /tmp
+COPY requirements.txt /tmp/requirements_hass.txt
 
 RUN apk add --no-cache git python3 ca-certificates libffi-dev libressl-dev nmap iputils && \
     addgroup -g ${GUID} hass && \
@@ -23,7 +24,7 @@ RUN apk add --no-cache git python3 ca-certificates libffi-dev libressl-dev nmap 
     egrep -e "${PLUGINS}" /requirements_plugins.txt | grep -v '#' > /tmp/requirements_plugins_filtered.txt && \
     pip3 install --no-cache-dir --no-index --only-binary=:all: --find-links ${WHEELS_LINKS} -r /tmp/requirements_core.txt && \
     pip3 install --no-cache-dir --no-index --only-binary=:all: --find-links ${WHEELS_LINKS} -r /tmp/requirements_plugins_filtered.txt && \
-    pip3 install --no-cache-dir homeassistant=="${VERSION}" && \
+    pip3 install --no-cache-dir -r /tmp/requirements_hass.txt && \
     apk del build-dependencies && \
     rm -rf /tmp/* /var/tmp/* /var/cache/apk/*
 
