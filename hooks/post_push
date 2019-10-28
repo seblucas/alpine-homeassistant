@@ -6,4 +6,14 @@
 curl -Lo manifest-tool https://github.com/estesp/manifest-tool/releases/download/v1.0.0/manifest-tool-linux-amd64
 chmod +x manifest-tool
 
-./manifest-tool push from-spec manifest.yaml
+HASS_VER=$(echo "$DOCKER_TAG" | cut -d '-' -f 1)
+
+if [ ! -z "$HASS_VER" ]; then 
+  MAJMIN_VER=$(echo "$DOCKER_TAG" | cut -d '-' -f 1 | cut -d '.' -f 1,2 -s)
+  TAGS=$(echo ", \"${MAJMIN_VER}\", \"${HASS_VER}\"" | sed -e 's/[]\/$*.^[]/\\&/g')
+  HASS_VER=$(echo "$HASS_VER" | sed -e 's/[]\/$*.^[]/\\&/g')
+  MAJMIN_VER=$(echo "$MAJMIN_VER" | sed -e 's/[]\/$*.^[]/\\&/g')
+  sed -i "s/\([a-z0-9]\+\)\-latest/$HASS_VER\-\1/g; s/\(\"latest\"\)/\1$TAGS/g; s/\:latest/\:$HASS_VER/g" manifest.yaml
+fi
+
+./manifest-tool push from-spec --ignore-missing manifest.yaml
