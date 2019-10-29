@@ -6,7 +6,7 @@
 curl -Lo manifest-tool https://github.com/estesp/manifest-tool/releases/download/v1.0.0/manifest-tool-linux-amd64
 chmod +x manifest-tool
 
-HASS_VER=$(echo "$DOCKER_TAG" | cut -d '-' -f 1)
+HASS_VER=$(echo "$DOCKER_TAG" | cut -d '-' -f 1 | grep '\.')
 
 if [ ! -z "$HASS_VER" ]; then 
   MAJMIN_VER=$(echo "$DOCKER_TAG" | cut -d '-' -f 1 | cut -d '.' -f 1,2 -s)
