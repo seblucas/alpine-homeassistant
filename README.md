@@ -3,6 +3,7 @@
 ## Description
 
 [![Docker cloud build](https://img.shields.io/docker/cloud/build/kurapov/alpine-homeassistant?logo=docker&logoColor=white)](https://hub.docker.com/r/kurapov/alpine-homeassistant/builds)
+[![Docker image pulls](https://img.shields.io/docker/pulls/kurapov/alpine-homeassistant?logo=docker&logoColor=white)](https://hub.docker.com/r/kurapov/alpine-homeassistant)
 
 Small docker image with [home assistant](https://home-assistant.io/) based on [Alpine Linux](https://hub.docker.com/_/alpine/).
 
