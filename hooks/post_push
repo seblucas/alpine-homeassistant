@@ -9,10 +9,9 @@ chmod +x manifest-tool
 HASS_VER=$(echo "$DOCKER_TAG" | cut -d '-' -f 1 | grep '\.')
 
 if [ ! -z "$HASS_VER" ]; then 
-  MAJMIN_VER=$(echo "$DOCKER_TAG" | cut -d '-' -f 1 | cut -d '.' -f 1,2 -s)
+  MAJMIN_VER=$(echo "$HASS_VER" | cut -d '.' -f 1,2 -s)
   TAGS=$(echo ", \"${MAJMIN_VER}\", \"${HASS_VER}\"" | sed -e 's/[]\/$*.^[]/\\&/g')
   HASS_VER=$(echo "$HASS_VER" | sed -e 's/[]\/$*.^[]/\\&/g')
-  MAJMIN_VER=$(echo "$MAJMIN_VER" | sed -e 's/[]\/$*.^[]/\\&/g')
   sed -i "s/\([a-z0-9]\+\)\-latest/$HASS_VER\-\1/g; s/\(\"latest\"\)/\1$TAGS/g; s/\:latest/\:$HASS_VER/g" manifest.yaml
 fi
 
