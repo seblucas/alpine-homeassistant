@@ -1,9 +1,7 @@
-name: Autotag
+name: autotag
 
 on:
-  pull_request:
-    types:
-      - merged
+  push:
     paths:
       - requirements.txt
     branches:
