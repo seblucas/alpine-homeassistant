@@ -1,0 +1,12 @@
+version: 1
+update_configs:
+  - package_manager: "python"
+    directory: "/"
+    update_schedule: "live"
+    default_reviewers:
+      - "2sheds"
+    automerged_updates:
+      - match:
+          dependency_name: "homeassistant"
+          update_type: "semver:patch"
+
