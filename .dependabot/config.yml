@@ -3,10 +3,10 @@ update_configs:
   - package_manager: "python"
     directory: "/"
     update_schedule: "live"
-    default_reviewers:
-      - "2sheds"
-    automerged_updates:
+    allowed_updates:
       - match:
           dependency_name: "homeassistant"
+    automerged_updates:
+      - match:
           update_type: "semver:patch"
 
