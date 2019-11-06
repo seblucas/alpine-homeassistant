@@ -15,4 +15,10 @@ if [ ! -z "$HASS_VER" ]; then
   sed -i "s/\([a-z0-9]\+\)\-latest/$HASS_VER\-\1/g; s/\(\"latest\"\)/\1$TAGS/g; s/\:latest/\:$HASS_VER/g" manifest.yaml
 fi
 
-./manifest-tool push from-spec --ignore-missing manifest.yaml
+./manifest-tool push from-spec manifest.yaml 2> /dev/null
+if [ $? -eq 0 ]; then
+  echo "All images pushed successfully, cleaning up tags."
+else
+  echo "Manifest images not complete, continuing."
+  ./manifest-tool push from-spec --ignore-missing manifest.yaml
+fi
