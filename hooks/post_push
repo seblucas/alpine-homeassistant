@@ -6,17 +6,31 @@
 curl -Lo manifest-tool https://github.com/estesp/manifest-tool/releases/download/v1.0.0/manifest-tool-linux-amd64
 chmod +x manifest-tool
 
-HASS_VER=$(echo "$DOCKER_TAG" | cut -d '-' -f 1 | grep '\.')
+HASS_TAG=$(echo "$DOCKER_TAG" | cut -d '-' -f 1 | grep '\.')
 
-if [ ! -z "$HASS_VER" ]; then 
-  MAJMIN_VER=$(echo "$HASS_VER" | cut -d '.' -f 1,2 -s)
-  TAGS=$(echo ", \"${MAJMIN_VER}\", \"${HASS_VER}\"" | sed -e 's/[]\/$*.^[]/\\&/g')
-  HASS_VER=$(echo "$HASS_VER" | sed -e 's/[]\/$*.^[]/\\&/g')
+if [ ! -z "$HASS_TAG" ]; then 
+  MAJMIN_VER=$(echo "$HASS_TAG" | cut -d '.' -f 1,2 -s)
+  TAGS=$(echo ", \"${MAJMIN_VER}\", \"${HASS_TAG}\"" | sed -e 's/[]\/$*.^[]/\\&/g')
+  HASS_VER=$(echo "$HASS_TAG" | sed -e 's/[]\/$*.^[]/\\&/g')
   sed -i "s/\([a-z0-9]\+\)\-latest/$HASS_VER\-\1/g; s/\(\"latest\"\)/\1$TAGS/g; s/\:latest/\:$HASS_VER/g" manifest.yaml
 fi
 
 ./manifest-tool push from-spec manifest.yaml 2> /dev/null
 if [ $? -eq 0 ]; then
+  if [ -z "$HASS_TAG" ]; then
+    echo "No cleanup for 'latest' tags"
+    exit 0
+  fi
+  if [ -z "$PA_TOKEN" ] || [ -z "$PA_USER" ]; then
+    echo "Both PA_USER and PA_TOKEN envvars have to be configured"
+    exit 0
+  fi
+  TOKEN=$(curl -s -H "Content-Type: application/json" \
+    -X POST -d '{"username": "'$PA_USER'", "password": "'$PA_TOKEN'"}' \
+    https://hub.docker.com/v2/users/login/ | jq -r .token)
+  for i in "amd64" "arm64" "armhf"; do
+    curl "https://hub.docker.com/v2/repositories/${PA_USER}/${DOCKER_REPO}/tags/${HASS_TAG}-${i}/" -X DELETE -H "Authorization: JWT ${TOKEN}"
+  done
   echo "All images pushed successfully, cleaning up tags."
 else
   echo "Manifest images not complete, continuing."
