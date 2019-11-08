@@ -30,7 +30,7 @@ if [ $? -eq 0 ]; then
     -X POST -d '{"username": "'$PA_USER'", "password": "'$PA_TOKEN'"}' \
 	https://hub.docker.com/v2/users/login/ | python -c "import sys, json; print json.load(sys.stdin)['token']")
   for i in "amd64" "arm64" "armhf"; do
-    curl "https://hub.docker.com/v2/repositories/${REPO}/tags/${HASS_TAG}-${i}/" -X DELETE -H "Authorization: JWT ${TOKEN}"
+    curl -s "https://hub.docker.com/v2/repositories/${REPO}/tags/${HASS_TAG}-${i}/" -X DELETE -H "Authorization: JWT ${TOKEN}"
   done
   echo "All images pushed successfully, cleaning up tags."
 else
