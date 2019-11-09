@@ -2,7 +2,7 @@
 
 ## Description
 
-[![Home Assistant version](https://img.shields.io/github/v/tag/2sheds/alpine-homeassistant?label=homeassistant&logo=python&logoColor=white)](https://github.com/home-assistant/home-assistant)
+[![Home Assistant version](https://img.shields.io/github/v/tag/2sheds/alpine-homeassistant?label=homeassistant&logo=python&logoColor=white)](https://github.com/home-assistant/home-assistant/releases)
 [![Docker cloud build](https://img.shields.io/docker/cloud/build/kurapov/alpine-homeassistant?logo=docker&logoColor=white)](https://hub.docker.com/r/kurapov/alpine-homeassistant/builds)
 [![Docker image pulls](https://img.shields.io/docker/pulls/kurapov/alpine-homeassistant?logo=docker&logoColor=white)](https://hub.docker.com/r/kurapov/alpine-homeassistant)
 
