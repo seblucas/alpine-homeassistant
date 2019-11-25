@@ -1,5 +1,4 @@
 image: kurapov/alpine-homeassistant:latest
-tags: ["latest"]
 manifests:
  - image: kurapov/alpine-homeassistant:amd64-latest
    platform:
