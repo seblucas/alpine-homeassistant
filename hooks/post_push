@@ -11,9 +11,8 @@ chmod +x manifest-tool
 REPO=$(echo "$DOCKER_REPO" | cut -d "/" -f 2,3)
 HASS_VER=$(echo "$DOCKER_TAG" | cut -d '-' -f 1 | grep '\.')
 
-if [ -n "$HASS_VER" ]; then 
-  SED_SAFE_VER=$(echo "$HASS_VER" | sed -e 's/[]\/$*.^[]/\\&/g')
-  sed -i "s/\([a-z0-9]\+\)\-latest/$SED_SAFE_VER\-\1/g; s/\:latest/\:$SED_SAFE_VER/g" manifest.yaml
+if [ -n "${HASS_VER}" ]; then 
+  sed -i "s|\([a-z0-9]\+\)\-latest|${HASS_VER}\-\1|g; s|\:latest|\:${HASS_VER}|g" manifest.yaml
 fi
 
 if ./manifest-tool push from-spec manifest.yaml 2> /dev/null; then
