@@ -1,0 +1,27 @@
+# Replicate Docker Hub environment
+DOCKERFILE_PATH="${DOCKERFILE_PATH:?DOCKERFILE_PATH not defined}"
+DOCKER_REPO="${DOCKER_REPO:?DOCKER_REPO not defined}"
+SOURCE_COMMIT="${SOURCE_COMMIT:-$(git rev-parse HEAD)}"
+SOURCE_BRANCH="${SOURCE_BRANCH:-$(git rev-parse --abbrev-ref HEAD)}"
+COMMIT_MSG="${COMMIT_MSG:-$(git show -s --format=%s)}"
+BUILD_ARCH=$(basename "${DOCKERFILE_PATH}" | cut -d '.' -f 2)
+PKG_VER=$(head -n 1 requirements.txt | awk -F '==' '{print $2}')
+DOCKER_TAG="${DOCKER_TAG:-${PKG_VER}-${BUILD_ARCH}}"
+IMAGE_NAME="${IMAGE_NAME:-${DOCKER_REPO}:${DOCKER_TAG}}"
+
+# Provide additional context
+VCS_URL="${VCS_URL:-$(git config --get remote.origin.url)}"
+REPO="${DOCKER_REPO#*/}"
+ALPINE_VER="${ALPINE_VER:-3.10}"
+BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+case ${BUILD_ARCH} in
+    amd64   ) BASEIMAGE_ARCH="amd64" ;;
+    aarch64 ) BASEIMAGE_ARCH="arm64v8" ;;
+    armhf   ) BASEIMAGE_ARCH="arm32v6" ;;
+esac
+QEMU_ARCH=$([ "${BUILD_ARCH}" == "armhf" ] && echo "${BUILD_ARCH::-2}" || echo "${BUILD_ARCH}")
+QEMU_USER_STATIC_DOWNLOAD_URL="https://github.com/multiarch/qemu-user-static/releases/download"
+QEMU_USER_STATIC_LATEST_TAG=$(curl -s https://api.github.com/repos/multiarch/qemu-user-static/tags \
+    | grep 'name.*v[0-9]' \
+    | head -n 1 \
+    | cut -d '"' -f 4)

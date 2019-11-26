@@ -1,35 +1,18 @@
-#!/bin/bash
+#!/bin/bash -xe
 
-BUILD_ARCH=$(echo "${DOCKERFILE_PATH}" | cut -d '.' -f 2)
-case ${BUILD_ARCH} in
-    amd64   ) BASEIMAGE_ARCH="amd64" ;;
-    aarch64 ) BASEIMAGE_ARCH="arm64v8" ;;
-    armhf   ) BASEIMAGE_ARCH="arm32v6" ;;
-esac
-QEMU_ARCH=$([ "${BUILD_ARCH}" == "armhf" ] && echo "${BUILD_ARCH::-2}" || echo "${BUILD_ARCH}")
-ALPINE_VER="${ALPINE_VER:-3.10}"
-HASS_VER=$(cat requirements.txt | grep 'homeassistant' | awk -F '==' '{print $2}')
-
-cp Dockerfile.template Dockerfile.${BUILD_ARCH}
-sed -i "s|__ALPINE_VER__|${ALPINE_VER}|g" Dockerfile.${BUILD_ARCH}
-sed -i "s|__HASS_VER__|${HASS_VER}|g" Dockerfile.${BUILD_ARCH}
-sed -i "s|__BUILD_ARCH__|${BUILD_ARCH}|g" Dockerfile.${BUILD_ARCH}
-sed -i "s|__BASEIMAGE_ARCH__|${BASEIMAGE_ARCH}|g" Dockerfile.${BUILD_ARCH}
-sed -i "s|__QEMU_ARCH__|${QEMU_ARCH}|g" Dockerfile.${BUILD_ARCH}
-if [ ${BUILD_ARCH} == 'amd64' ]; then
-  sed -i "/__CROSS_/d" Dockerfile.${BUILD_ARCH}
+. ./hooks/env
+cp Dockerfile.template "${DOCKERFILE_PATH}"
+sed -i "s|__ALPINE_VER__|${ALPINE_VER}|g" "${DOCKERFILE_PATH}"
+sed -i "s|__BUILD_ARCH__|${BUILD_ARCH}|g" "${DOCKERFILE_PATH}"
+sed -i "s|__BASEIMAGE_ARCH__|${BASEIMAGE_ARCH}|g" "${DOCKERFILE_PATH}"
+sed -i "s|__QEMU_ARCH__|${QEMU_ARCH}|g" "${DOCKERFILE_PATH}"
+if [ "${BUILD_ARCH}" == 'amd64' ]; then
+  sed -i "/__CROSS_/d" "${DOCKERFILE_PATH}"
+  echo "qemu-user-static: Download not required for current arch"
+  exit 0
 else
-  sed -i "s/__CROSS_//g" Dockerfile.${BUILD_ARCH}
+  sed -i "s/__CROSS_//g" "${DOCKERFILE_PATH}"
 fi
-
-[ "${BUILD_ARCH}" == "amd64" ] && \
-    { echo 'qemu-user-static: Download not required for current arch'; exit 0; }
-
-QEMU_USER_STATIC_DOWNLOAD_URL="https://github.com/multiarch/qemu-user-static/releases/download"
-QEMU_USER_STATIC_LATEST_TAG=$(curl -s https://api.github.com/repos/multiarch/qemu-user-static/tags \
-    | grep 'name.*v[0-9]' \
-    | head -n 1 \
-    | cut -d '"' -f 4)
 
 curl -SL "${QEMU_USER_STATIC_DOWNLOAD_URL}/${QEMU_USER_STATIC_LATEST_TAG}/x86_64_qemu-${QEMU_ARCH}-static.tar.gz" \
     | tar xzv
