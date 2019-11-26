@@ -8,14 +8,16 @@ curl -Lo manifest-tool https://github.com/estesp/manifest-tool/releases/download
 chmod +x manifest-tool
 
 . ./hooks/env
-if [ -n "${PKG_VER}" ]; then 
-  sed -i "s|\([a-z0-9]\+\)\-latest|${PKG_VER}\-\1|g; s|\:latest|\:${PKG_VER}|g" manifest.yaml
+TAG_VER=$(echo "${DOCKER_TAG%-*}" | grep "\.")
+if [ -n "${TAG_VER}" ]; then
+  sed -i "s|\([a-z0-9]\+\)\-latest|${TAG_VER}\-\1|g; s|\:latest|\:${TAG_VER}|g" manifest.yaml
 fi
 
 if ./manifest-tool push from-spec manifest.yaml 2> /dev/null; then
   echo "All images pushed successfully, cleaning up tags."
+  [ -n "${TAG_VER}" ] && [ echo "Only cleanup SemVer tags"; exit 0; ]
   # Label resulting multi-arch image with additional tags
-  echo "tags: [\"${PKG_VER}\", \"${PKG_VER%.*}\", \"latest\"]" >> manifest.yaml
+  echo "tags: [\"${TAG_VER}\", \"${TAG_VER%.*}\", \"latest\"]" >> manifest.yaml
   ./manifest-tool push from-spec manifest.yaml
 
   ${PA_TOKEN:?PA_TOKEN not configured}
@@ -26,7 +28,7 @@ if ./manifest-tool push from-spec manifest.yaml 2> /dev/null; then
     https://hub.docker.com/v2/users/login/ | python -c "import sys, json; print json.load(sys.stdin)['token']")
   # Clean up SEMVER-ARCH tags
   for i in "amd64" "arm64" "armhf"; do
-    curl -s -H "Authorization: JWT ${JW_TOKEN}" -X DELETE "https://hub.docker.com/v2/repositories/${REPO}/tags/${PKG_VER}-${i}/"
+    curl -s -H "Authorization: JWT ${JW_TOKEN}" -X DELETE "https://hub.docker.com/v2/repositories/${REPO}/tags/${TAG_VER}-${i}/"
   done
 else
   echo "Manifest images not complete, continuing."
