@@ -15,7 +15,10 @@ fi
 
 if ./manifest-tool push from-spec manifest.yaml 2> /dev/null; then
   echo "All images pushed successfully, cleaning up tags."
-  [ -n "${TAG_VER}" ] && [ echo "Only cleanup SemVer tags"; exit 0; ]
+  if [ -n "${TAG_VER}" ]; then 
+    echo "Only cleanup SemVer tags"; 
+    exit 0; 
+  fi
   # Label resulting multi-arch image with additional tags
   echo "tags: [\"${TAG_VER}\", \"${TAG_VER%.*}\", \"latest\"]" >> manifest.yaml
   ./manifest-tool push from-spec manifest.yaml
