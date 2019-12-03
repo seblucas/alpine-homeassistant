@@ -1,27 +1,24 @@
-#!/bin/bash
-
-# Use manifest-tool to create the manifest, given the experimental
-# "docker manifest" command isn't available yet on Docker Hub.
-
-# TODO: replace with Docker's experimental manifest feature
-curl -Lo manifest-tool https://github.com/estesp/manifest-tool/releases/download/v1.0.0/manifest-tool-linux-amd64
-chmod +x manifest-tool
+#!/bin/bash -xe
 
 . ./hooks/env
-TAG_VER=$(echo "${DOCKER_TAG%-*}" | grep "\.")
-if [ -n "${TAG_VER}" ]; then
-  sed -i "s|\([a-z0-9]\+\)\-latest|${TAG_VER}\-\1|g; s|\:latest|\:${TAG_VER}|g" manifest.yaml
-fi
 
-if ./manifest-tool push from-spec manifest.yaml 2> /dev/null; then
+TAG_PREFIX=${DOCKER_TAG%-*}
+IMAGE_PREFIX="${IMAGE_NAME%-*}"
+IMAGE_LIST=""
+for i in "amd64" "arm64" "armhf"; do
+  IMAGE_LIST="${IMAGE_LIST}${IMAGE_PREFIX}-${i} "
+done
+
+# Enable CLI experimental manifest features
+export DOCKER_CLI_EXPERIMENTAL="enabled"
+
+if [ $(docker manifest inspect "${IMAGE_PREFIX}" | grep -i "architecture" | wc -l) -eq 3 ]; then
   echo "All images pushed successfully, cleaning up tags."
-  if [ -n "${TAG_VER}" ]; then 
-    echo "Only cleanup SemVer tags"; 
-    exit 0; 
+  if [ "${TAG_PREFIX}" != "latest" ]; then
+    docker manifest create --amend "${IMAGE_PREFIX}" ${IMAGE_LIST}
+    docker manifest create --amend "${IMAGE_PREFIX%.*}" ${IMAGE_LIST}
   fi
-  # Label resulting multi-arch image with additional tags
-  echo "tags: [\"${TAG_VER}\", \"${TAG_VER%.*}\", \"latest\"]" >> manifest.yaml
-  ./manifest-tool push from-spec manifest.yaml
+  docker manifest create --amend "${DOCKER_REPO}:latest" ${IMAGE_LIST} || exit 1
 
   ${PA_TOKEN:?PA_TOKEN not configured}
   ${PA_USER:?PA_USER not configured}
@@ -31,9 +28,14 @@ if ./manifest-tool push from-spec manifest.yaml 2> /dev/null; then
     https://hub.docker.com/v2/users/login/ | python -c "import sys, json; print json.load(sys.stdin)['token']")
   # Clean up SEMVER-ARCH tags
   for i in "amd64" "arm64" "armhf"; do
-    curl -s -H "Authorization: JWT ${JW_TOKEN}" -X DELETE "https://hub.docker.com/v2/repositories/${REPO}/tags/${TAG_VER}-${i}/"
+    curl -s -H "Authorization: JWT ${JW_TOKEN}" -X DELETE "https://hub.docker.com/v2/repositories/${REPO}/tags/${TAG_PREFIX}-${i}/"
   done
 else
   echo "Manifest images not complete, continuing."
-  ./manifest-tool push from-spec --ignore-missing manifest.yaml
+  if [[ ${BASEIMAGE_ARCH} == "arm"* ]]; then
+    docker manifest annotate ${IMAGE_PREFIX} ${IMAGE_NAME} --os linux --arch "${DOCKER_ARCH}" --variant "${BASEIMAGE_ARCH#arm*v}"
+  else
+    docker manifest annotate ${IMAGE_PREFIX} ${IMAGE_NAME} --os linux --arch "${DOCKER_ARCH}"
+  fi
+  docker push ${IMAGE_NAME}
 fi

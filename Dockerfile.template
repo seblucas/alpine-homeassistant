@@ -1,6 +1,13 @@
-FROM __BASEIMAGE_ARCH__/alpine:__ALPINE_VER__
+ARG ALPINE_VER="3.10"
+ARG BASEIMAGE_ARCH
+
+FROM ${BASEIMAGE_ARCH}/alpine:${ALPINE_VER}
 MAINTAINER Oleg Kurapov <oleg@kurapov.com>
 LABEL Description="Home Assistant"
+
+ARG ALPINE_VER
+ARG BASEPKG_ARCH
+ARG QEMU_ARCH
 
 ARG BRANCH="none"
 ARG COMMIT="local-build"
@@ -12,12 +19,9 @@ ARG UID=1000
 ARG GUID=1000
 ARG MAKEFLAGS=-j4
 ARG VERSION="0.100.0"
-ARG ALPINE_VER="3.10"
-ARG BUILD_ARCH="amd64"
-ARG QEMU_ARCH="amd64"
 ARG PLUGINS="frontend|pyotp|PyQRCode|sqlalchemy|distro|http|nmap|weather|uptimerobot|rxv|wakeonlan|websocket|paho-mqtt|samsungctl[websocket]|pychromecast|aiohttp_cors|jsonrpc-websocket|jsonrpc-async"
 
-ENV WHEELS_LINKS="https://wheels.home-assistant.io/alpine-${ALPINE_VER}/${BUILD_ARCH}/"
+ENV WHEELS_LINKS="https://wheels.home-assistant.io/alpine-${ALPINE_VER}/${BASEPKG_ARCH}/"
 
 LABEL \
   org.opencontainers.image.authors="Oleg Kurapov <oleg@kurapov.com>" \

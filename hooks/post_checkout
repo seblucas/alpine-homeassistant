@@ -2,10 +2,6 @@
 
 . ./hooks/env
 cp Dockerfile.template "${DOCKERFILE_PATH}"
-sed -i "s|__ALPINE_VER__|${ALPINE_VER}|g" "${DOCKERFILE_PATH}"
-sed -i "s|__BUILD_ARCH__|${BUILD_ARCH}|g" "${DOCKERFILE_PATH}"
-sed -i "s|__BASEIMAGE_ARCH__|${BASEIMAGE_ARCH}|g" "${DOCKERFILE_PATH}"
-sed -i "s|__QEMU_ARCH__|${QEMU_ARCH}|g" "${DOCKERFILE_PATH}"
 if [ "${BUILD_ARCH}" == 'amd64' ]; then
   sed -i "/__CROSS_/d" "${DOCKERFILE_PATH}"
   echo "qemu-user-static: Download not required for current arch"

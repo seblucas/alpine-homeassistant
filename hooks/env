@@ -16,9 +16,9 @@ REPO="${DOCKER_REPO#*/}"
 ALPINE_VER="${ALPINE_VER:-3.10}"
 BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 case ${BUILD_ARCH} in
-    amd64   ) BASEIMAGE_ARCH="amd64" ;;
-    aarch64 ) BASEIMAGE_ARCH="arm64v8" ;;
-    armhf   ) BASEIMAGE_ARCH="arm32v6" ;;
+    aarch64 ) BASEIMAGE_ARCH="arm64v8"; DOCKER_ARCH="arm64" ;;
+    armhf   ) BASEIMAGE_ARCH="arm32v7"; DOCKER_ARCH="arm" ;;
+    *       ) BASEIMAGE_ARCH="${BUILD_ARCH}"; DOCKER_ARCH="${BUILD_ARCH}" ;;
 esac
 QEMU_ARCH=$([ "${BUILD_ARCH}" == "armhf" ] && echo "${BUILD_ARCH::-2}" || echo "${BUILD_ARCH}")
 QEMU_USER_STATIC_DOWNLOAD_URL="https://github.com/multiarch/qemu-user-static/releases/download"

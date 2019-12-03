@@ -1,6 +1,7 @@
 #!/bin/bash
 
 . ./hooks/env
+
 docker build \
   --build-arg VERSION="${PKG_VER}"  \
   --build-arg COMMIT="${SOURCE_COMMIT}" \
@@ -8,7 +9,8 @@ docker build \
   --build-arg VCS_URL="${VCS_URL}" \
   --build-arg BUILD_DATE="${BUILD_DATE}" \
   --build-arg ALPINE_VER="${ALPINE_VER}" \
-  --build-arg BUILD_ARCH="${BUILD_ARCH}" \
   --build-arg QEMU_ARCH="${QEMU_ARCH}" \
+  --build-arg BASEIMAGE_ARCH="${BASEIMAGE_ARCH}" \
+  --build-arg BASEPKG_ARCH="${BUILD_ARCH}" \
 -f "${DOCKERFILE_PATH}" \
 -t "${IMAGE_NAME}" .
